@@ -7,28 +7,24 @@ class RadialMenu extends StatefulWidget {
   final List<RadialMenuItem> items;
   final childDistance;
   final iconRadius;
-  final iconPadding;
   final mainButtonRadius;
-  final mainButtonPadding;
-  final mainButtonAnimationDuration;
-  final childIconAnimationDuration;
-  final dialOpenDuration;
   final startAngle;
   final angularWidth;
   final isClockwise;
+  final dialOpenDuration;
+  final curve;
+
+  final _buttonPadding = 8.0;
 
   RadialMenu(this.items,
-      {this.childDistance = 100,
-      this.iconRadius = 30.0,
-      this.iconPadding = 8.0,
-      this.mainButtonRadius = 30.0,
-      this.mainButtonPadding = 8.0,
-      this.mainButtonAnimationDuration = 200,
-      this.childIconAnimationDuration = 200,
-      this.dialOpenDuration = 200,
+      {this.childDistance = 80,
+      this.iconRadius = 16.0,
+      this.mainButtonRadius = 24.0,
+      this.dialOpenDuration = 300,
       this.startAngle = 0,
       this.angularWidth = 90,
-      this.isClockwise = false});
+      this.isClockwise = true,
+      this.curve = Curves.easeInOutBack});
 
   @override
   _RadialMenuState createState() => _RadialMenuState();
@@ -48,14 +44,14 @@ class _RadialMenuState extends State<RadialMenu> {
     return Align(
       alignment: Alignment.center,
       child: AnimatedSwitcher(
-        duration: Duration(milliseconds: widget.mainButtonAnimationDuration),
+        duration: Duration(milliseconds: widget.dialOpenDuration),
         transitionBuilder: (Widget child, Animation<double> animation) {
           return ScaleTransition(child: child, scale: animation);
         },
         child: opened
             ? InkWell(
                 child: Padding(
-                    padding: EdgeInsets.all(widget.mainButtonPadding),
+                    padding: EdgeInsets.all(widget._buttonPadding),
                     child: Container(
                         height: widget.mainButtonRadius * 2,
                         width: widget.mainButtonRadius * 2,
@@ -72,7 +68,7 @@ class _RadialMenuState extends State<RadialMenu> {
                 })
             : InkWell(
                 child: Padding(
-                    padding: EdgeInsets.all(widget.mainButtonPadding),
+                    padding: EdgeInsets.all(widget._buttonPadding),
                     child: Container(
                         height: widget.mainButtonRadius * 2,
                         width: widget.mainButtonRadius * 2,
@@ -96,45 +92,48 @@ class _RadialMenuState extends State<RadialMenu> {
       int index = e.key;
       RadialMenuItem item = e.value;
 
-      final basePositionX = MediaQuery.of(context).size.width / 2 -
-          (widget.iconRadius / 2 + widget.mainButtonPadding);
-      final basePositionY = MediaQuery.of(context).size.height / 2 -
-          (widget.iconRadius / 2 + widget.mainButtonPadding);
+      final basePositionX =
+          MediaQuery.of(context).size.width / 2 - (widget.iconRadius + widget._buttonPadding);
+      final basePositionY =
+          MediaQuery.of(context).size.height / 2 - (widget.iconRadius + widget._buttonPadding);
       return AnimatedPositioned(
           duration: Duration(milliseconds: widget.dialOpenDuration),
+          curve: widget.curve,
           left: opened
               ? basePositionX +
                   widget.childDistance *
-                      cos(_degreeToRadian(
-                          widget.angularWidth / (widget.items.length - 1) * index +
-                              widget.startAngle)) *
-                      (widget.isClockwise ? 1 : -1)
+                      cos(_degreeToRadian(widget.angularWidth /
+                              (widget.items.length - 1) *
+                              index +
+                          widget.startAngle)) *
+                      (widget.isClockwise ? -1 : 1)
               : basePositionX,
           top: opened
               ? basePositionY +
                   widget.childDistance *
-                      sin(_degreeToRadian(
-                          widget.angularWidth / (widget.items.length - 1) * index +
-                              widget.startAngle)) *
-                      (widget.isClockwise ? 1 : -1)
+                      sin(_degreeToRadian(widget.angularWidth /
+                              (widget.items.length - 1) *
+                              index +
+                          widget.startAngle)) *
+                      (widget.isClockwise ? -1 : 1)
               : basePositionY,
-          child: _buildOption(item));
+          child: _buildChild(item));
     }).toList();
   }
 
-  Widget _buildOption(RadialMenuItem item) {
+  Widget _buildChild(RadialMenuItem item) {
     return AnimatedSwitcher(
-        duration: Duration(milliseconds: widget.childIconAnimationDuration),
+        duration: Duration(milliseconds: widget.dialOpenDuration),
         transitionBuilder: (Widget child, Animation<double> animation) {
           return RotationTransition(child: child, turns: animation);
         },
         child: InkWell(
           key: UniqueKey(),
           child: Padding(
-              padding: EdgeInsets.all(widget.iconPadding),
+              padding: EdgeInsets.all(widget._buttonPadding),
               child: Container(
-                  height: widget.iconRadius,
-                  width: widget.iconRadius,
+                  height: widget.iconRadius * 2,
+                  width: widget.iconRadius * 2,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(widget.iconRadius),
                       color: item.color),

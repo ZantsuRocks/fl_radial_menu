@@ -10,12 +10,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Home(),
+      home: HomeScreen(),
     );
   }
 }
 
-class Home extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
 
   final items = [
     RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.red,
@@ -26,10 +26,7 @@ class Home extends StatelessWidget {
         () => print('blue')),
     RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.yellow,
         () => print('yellow')),
-    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.purple,
-        () => print('purple')),
   ];
-
 
   @override
   Widget build(BuildContext context) {

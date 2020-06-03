@@ -1,14 +1,28 @@
 # fl_radial_menu
 
-A new Flutter package project.
+Radial Menu Widget
 
-## Getting Started
+## Example
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+```
+class HomeScreen extends StatelessWidget {
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+  final items = [
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.red,
+        () => print('red')),
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.green,
+        () => print('green')),
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.blue,
+        () => print('blue')),
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.yellow,
+        () => print('yellow')),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: RadialMenu(items),
+    );
+  }
+}
+```

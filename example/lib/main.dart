@@ -1,0 +1,40 @@
+
+import 'package:fl_radial_menu/fl_radial_menu.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Home(),
+    );
+  }
+}
+
+class Home extends StatelessWidget {
+
+  final items = [
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.red,
+        () => print('red')),
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.green,
+        () => print('green')),
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.blue,
+        () => print('blue')),
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.yellow,
+        () => print('yellow')),
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.purple,
+        () => print('purple')),
+  ];
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: RadialMenu(items),
+    );
+  }
+}

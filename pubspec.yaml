@@ -1,6 +1,7 @@
 name: fl_radial_menu
 description: A new Flutter package project.
 version: 0.0.1
+homepage: https://pub.dev/packages/fl_radial_menu
 repository: https://github.com/itog/fl_radial_menu
 
 environment:

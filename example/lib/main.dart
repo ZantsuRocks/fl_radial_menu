@@ -26,12 +26,14 @@ class HomeScreen extends StatelessWidget {
         () => print('blue')),
     RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.yellow,
         () => print('yellow')),
+     RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.purple,
+        () => print('purple')),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: RadialMenu(items)),
+      body: Center(child: RadialMenu(items, isClockwise: true, area: Direction.bottom)),
     );
   }
 }

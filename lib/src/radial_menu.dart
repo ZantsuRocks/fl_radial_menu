@@ -3,17 +3,90 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'radial_menu_item.dart';
 
+enum Direction {
+  topLeft,
+  topRight,
+  bottomLeft,
+  bottomRight,
+  top,
+  bottom,
+  left,
+  right,
+  circle,
+}
+
 class RadialMenu extends StatefulWidget {
   final List<RadialMenuItem> items;
-  final childDistance;
-  final iconRadius;
-  final mainButtonRadius;
-  final startAngle;
-  final angularWidth;
-  final isClockwise;
-  final dialOpenDuration;
-  final curve;
-  get containersize => (childDistance + iconRadius) * (2 + 0.1); // consider animation overshoot
+  final double childDistance;
+  final double iconRadius;
+  final double mainButtonRadius;
+  final bool isClockwise;
+  final int dialOpenDuration;
+  final Curve curve;
+  final Direction area;
+  double get containersize => (childDistance + iconRadius) * (2 + 0.1); // consider animation overshoot
+
+  int get startAngle {
+    switch (area) {
+      case Direction.topLeft:
+        return isClockwise ? 180 : 90;
+        break;
+      case Direction.topRight:
+        return isClockwise ? 270 : 0;
+        break;
+      case Direction.bottomLeft:
+        return isClockwise ? 90 : 180;
+        break;
+      case Direction.bottomRight:
+        return isClockwise ? 0 : 270;
+        break;
+      case Direction.top:
+        return isClockwise ? 180 : 0;
+        break;
+      case Direction.bottom:
+        return isClockwise ? 0 : 180;
+        break;
+      case Direction.left:
+        return 90;
+        break;
+      case Direction.right:
+        return 270;
+        break;
+      case Direction.circle:
+        return 0;
+        break;
+    }
+    return 0;
+  }
+
+  int get angularWidth {
+    switch (area) {
+      case Direction.topLeft:
+      case Direction.topRight:
+      case Direction.bottomLeft:
+      case Direction.bottomRight:
+        return 90;
+        break;
+      case Direction.top:
+      case Direction.bottom:
+      case Direction.left:
+      case Direction.right:
+        return 180;
+        break;
+      case Direction.circle:
+        return 360;
+        break;
+    }
+    return 0;
+  }
+
+  int get numDivide {
+    if (angularWidth == 360.0) {
+      return items.length;
+    } else {
+      return items.length - 1;
+    }
+  }
 
   final _mainButtonPadding = 8.0;
   final _itemButtonPadding = 8.0;
@@ -23,10 +96,9 @@ class RadialMenu extends StatefulWidget {
       this.iconRadius = 16.0,
       this.mainButtonRadius = 24.0,
       this.dialOpenDuration = 300,
-      this.startAngle = 0,
-      this.angularWidth = 90,
       this.isClockwise = true,
-      this.curve = Curves.easeInOutBack});
+      this.curve = Curves.easeInOutBack,
+      this.area = Direction.circle});
 
   @override
   _RadialMenuState createState() => _RadialMenuState();
@@ -110,19 +182,18 @@ class _RadialMenuState extends State<RadialMenu> {
               ? basePositionX +
                   widget.childDistance *
                       cos(_degreeToRadian(widget.angularWidth /
-                              (widget.items.length - 1) *
+                              (widget.numDivide) *
                               index +
-                          widget.startAngle)) *
-                      (widget.isClockwise ? -1 : 1)
+                          widget.startAngle))
               : basePositionX,
           top: opened
               ? basePositionY +
                   widget.childDistance *
                       sin(_degreeToRadian(widget.angularWidth /
-                              (widget.items.length - 1) *
+                              (widget.numDivide) *
                               index +
                           widget.startAngle)) *
-                      (widget.isClockwise ? -1 : 1)
+                      (widget.isClockwise ? 1 : -1)
               : basePositionY,
           child: _buildChild(item));
     }).toList();

@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
 
 class HomeScreen extends StatelessWidget {
 
-  final items = [
+  final mainItems = [
     RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.red,
         () => print('red')),
     RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.green,
@@ -30,10 +30,20 @@ class HomeScreen extends StatelessWidget {
         () => print('purple')),
   ];
 
+  final fabItems = [
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.red,
+        () => print('red')),
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.green,
+        () => print('green')),
+    RadialMenuItem(Icon(FontAwesome.glass, color: Colors.white), Colors.blue,
+        () => print('blue')),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: RadialMenu(items, isClockwise: true, area: Direction.bottom)),
+      body: Center(child: RadialMenu(mainItems, isClockwise: false,)),
+      floatingActionButton: RadialMenu(fabItems, fanout: Fanout.topLeft,),
     );
   }
 }

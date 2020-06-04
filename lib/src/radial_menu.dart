@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'radial_menu_item.dart';
 
-enum Direction {
+enum Fanout {
   topLeft,
   topRight,
   bottomLeft,
@@ -23,61 +23,138 @@ class RadialMenu extends StatefulWidget {
   final bool isClockwise;
   final int dialOpenDuration;
   final Curve curve;
-  final Direction area;
-  double get containersize => (childDistance + iconRadius) * (2 + 0.1); // consider animation overshoot
+  final Fanout fanout;
+
+  final _mainButtonPadding = 8.0;
+  final _itemButtonPadding = 8.0;
+
+  Size get containersize {
+    double overshootBuffer = 10;
+
+    switch (fanout) {
+      case Fanout.topLeft:
+      case Fanout.topRight:
+      case Fanout.bottomLeft:
+      case Fanout.bottomRight:
+        double w =
+            childDistance + iconRadius + mainButtonRadius + overshootBuffer;
+        double h = w;
+        return Size(w, h);
+        break;
+      case Fanout.top:
+      case Fanout.bottom:
+        double w = (childDistance + iconRadius) * 2 + overshootBuffer;
+        double h = childDistance +
+            iconRadius +
+            mainButtonRadius +
+            _mainButtonPadding +
+            overshootBuffer;
+        return Size(w, h);
+        break;
+      case Fanout.left:
+      case Fanout.right:
+        double w = childDistance +
+            iconRadius +
+            mainButtonRadius +
+            _mainButtonPadding +
+            overshootBuffer;
+        double h = (childDistance + iconRadius) * 2 + overshootBuffer;
+        return Size(w, h);
+        break;
+      case Fanout.circle:
+        double w = (childDistance + iconRadius) * 2 + overshootBuffer;
+        double h = w;
+        return Size(w, h);
+        break;
+    }
+    return Size(0, 0);
+  }
+
+  Alignment get stackAlignment {
+    switch (fanout) {
+      case Fanout.topLeft:
+        return Alignment.bottomRight;
+        break;
+      case Fanout.topRight:
+        return Alignment.bottomLeft;
+        break;
+      case Fanout.bottomLeft:
+        return Alignment.topRight;
+        break;
+      case Fanout.bottomRight:
+        return Alignment.topLeft;
+        break;
+      case Fanout.top:
+        return Alignment.bottomCenter;
+        break;
+      case Fanout.bottom:
+        return Alignment.topCenter;
+        break;
+      case Fanout.left:
+        return Alignment.centerRight;
+        break;
+      case Fanout.right:
+        return Alignment.centerLeft;
+        break;
+      case Fanout.circle:
+      default:
+        return Alignment.center;
+        break;
+    }
+  }
 
   int get startAngle {
-    switch (area) {
-      case Direction.topLeft:
+    switch (fanout) {
+      case Fanout.topLeft:
         return isClockwise ? 180 : 90;
         break;
-      case Direction.topRight:
+      case Fanout.topRight:
         return isClockwise ? 270 : 0;
         break;
-      case Direction.bottomLeft:
+      case Fanout.bottomLeft:
         return isClockwise ? 90 : 180;
         break;
-      case Direction.bottomRight:
+      case Fanout.bottomRight:
         return isClockwise ? 0 : 270;
         break;
-      case Direction.top:
+      case Fanout.top:
         return isClockwise ? 180 : 0;
         break;
-      case Direction.bottom:
+      case Fanout.bottom:
         return isClockwise ? 0 : 180;
         break;
-      case Direction.left:
+      case Fanout.left:
         return 90;
         break;
-      case Direction.right:
+      case Fanout.right:
         return 270;
         break;
-      case Direction.circle:
+      case Fanout.circle:
+      default:
         return 0;
         break;
     }
-    return 0;
   }
 
   int get angularWidth {
-    switch (area) {
-      case Direction.topLeft:
-      case Direction.topRight:
-      case Direction.bottomLeft:
-      case Direction.bottomRight:
+    switch (fanout) {
+      case Fanout.topLeft:
+      case Fanout.topRight:
+      case Fanout.bottomLeft:
+      case Fanout.bottomRight:
         return 90;
         break;
-      case Direction.top:
-      case Direction.bottom:
-      case Direction.left:
-      case Direction.right:
+      case Fanout.top:
+      case Fanout.bottom:
+      case Fanout.left:
+      case Fanout.right:
         return 180;
         break;
-      case Direction.circle:
+      case Fanout.circle:
+      default:
         return 360;
         break;
     }
-    return 0;
   }
 
   int get numDivide {
@@ -88,8 +165,87 @@ class RadialMenu extends StatefulWidget {
     }
   }
 
-  final _mainButtonPadding = 8.0;
-  final _itemButtonPadding = 8.0;
+  Offset get basePosition {
+    switch (fanout) {
+      case Fanout.topLeft:
+        final x = containersize.width -
+            (mainButtonRadius +
+                _mainButtonPadding +
+                iconRadius +
+                _itemButtonPadding);
+        final y = containersize.height -
+            (mainButtonRadius +
+                _mainButtonPadding +
+                iconRadius +
+                _itemButtonPadding);
+        return Offset(x, y);
+        break;
+      case Fanout.topRight:
+        final x = (mainButtonRadius + _mainButtonPadding) -
+            (iconRadius + _itemButtonPadding);
+        final y = containersize.height -
+            (mainButtonRadius +
+                _mainButtonPadding +
+                iconRadius +
+                _itemButtonPadding);
+        return Offset(x, y);
+        break;
+      case Fanout.bottomLeft:
+        final x = containersize.width -
+            (mainButtonRadius +
+                _mainButtonPadding +
+                iconRadius +
+                _itemButtonPadding);
+        final y = (mainButtonRadius + _mainButtonPadding) -
+            (iconRadius + _itemButtonPadding);
+        return Offset(x, y);
+        break;
+      case Fanout.bottomRight:
+        final x = (mainButtonRadius + _mainButtonPadding) -
+            (iconRadius + _itemButtonPadding);
+        final y = (mainButtonRadius + _mainButtonPadding) -
+            (iconRadius + _itemButtonPadding);
+        return Offset(x, y);
+        break;
+      case Fanout.top:
+        final x = containersize.width / 2 - (iconRadius + _itemButtonPadding);
+        final y = containersize.height -
+            (mainButtonRadius +
+                _mainButtonPadding +
+                iconRadius +
+                _itemButtonPadding);
+        return Offset(x, y);
+        break;
+      case Fanout.bottom:
+        final x = containersize.width / 2 - (iconRadius + _itemButtonPadding);
+        final y = (mainButtonRadius + _mainButtonPadding) -
+            (iconRadius + _itemButtonPadding);
+        return Offset(x, y);
+        break;
+      case Fanout.left:
+        final x = containersize.width -
+            (mainButtonRadius +
+                _mainButtonPadding +
+                iconRadius +
+                _itemButtonPadding);
+        final y = containersize.height / 2 - (iconRadius + _itemButtonPadding);
+        return Offset(x, y);
+        break;
+      case Fanout.right:
+        final x = (mainButtonRadius + _mainButtonPadding) -
+            (iconRadius + _itemButtonPadding);
+        final y = containersize.height / 2 - (iconRadius + _itemButtonPadding);
+        return Offset(x, y);
+        break;
+      case Fanout.circle:
+      default:
+        final x = containersize.width / 2 - (iconRadius + _itemButtonPadding);
+        final y = containersize.height / 2 - (iconRadius + _itemButtonPadding);
+
+        return Offset(x, y);
+        break;
+    }
+  }
 
   RadialMenu(this.items,
       {this.childDistance = 80.0,
@@ -98,7 +254,7 @@ class RadialMenu extends StatefulWidget {
       this.dialOpenDuration = 300,
       this.isClockwise = true,
       this.curve = Curves.easeInOutBack,
-      this.area = Direction.circle});
+      this.fanout = Fanout.circle});
 
   @override
   _RadialMenuState createState() => _RadialMenuState();
@@ -113,11 +269,11 @@ class _RadialMenuState extends State<RadialMenu> {
     list.addAll(_buildChildren());
     list.add(_buildMainButton());
     return Container(
-      width: widget.containersize,
-      height: widget.containersize,
-      // color: Colors.grey,
+      width: widget.containersize.width,
+      height: widget.containersize.height,
+//for debug      color: Colors.grey,
       child: Stack(
-        alignment: Alignment.center,
+        alignment: widget.stackAlignment,
         children: list,
       ),
     );
@@ -171,30 +327,25 @@ class _RadialMenuState extends State<RadialMenu> {
     return widget.items.asMap().entries.map((e) {
       int index = e.key;
       RadialMenuItem item = e.value;
-      final basePositionX = widget.containersize / 2 -
-          (widget.iconRadius + widget._itemButtonPadding);
-      final basePositionY = widget.containersize / 2 -
-          (widget.iconRadius + widget._itemButtonPadding);
+
       return AnimatedPositioned(
           duration: Duration(milliseconds: widget.dialOpenDuration),
           curve: widget.curve,
           left: opened
-              ? basePositionX +
+              ? widget.basePosition.dx +
                   widget.childDistance *
-                      cos(_degreeToRadian(widget.angularWidth /
-                              (widget.numDivide) *
-                              index +
-                          widget.startAngle))
-              : basePositionX,
+                      cos(_degreeToRadian(
+                          widget.angularWidth / (widget.numDivide) * index +
+                              widget.startAngle))
+              : widget.basePosition.dx,
           top: opened
-              ? basePositionY +
+              ? widget.basePosition.dy +
                   widget.childDistance *
-                      sin(_degreeToRadian(widget.angularWidth /
-                              (widget.numDivide) *
-                              index +
-                          widget.startAngle)) *
+                      sin(_degreeToRadian(
+                          widget.angularWidth / (widget.numDivide) * index +
+                              widget.startAngle)) *
                       (widget.isClockwise ? 1 : -1)
-              : basePositionY,
+              : widget.basePosition.dy,
           child: _buildChild(item));
     }).toList();
   }

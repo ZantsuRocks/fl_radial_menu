@@ -1,3 +1,6 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.2] - Fix layout issues.
 
-* TODO: Describe initial release.
+* Fix layout issues
+
+## [0.0.1] - Initial release.
+

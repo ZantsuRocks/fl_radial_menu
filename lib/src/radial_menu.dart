@@ -13,11 +13,13 @@ class RadialMenu extends StatefulWidget {
   final isClockwise;
   final dialOpenDuration;
   final curve;
+  get containersize => (childDistance + iconRadius) * (2 + 0.1); // consider animation overshoot
 
-  final _buttonPadding = 8.0;
+  final _mainButtonPadding = 8.0;
+  final _itemButtonPadding = 8.0;
 
   RadialMenu(this.items,
-      {this.childDistance = 80,
+      {this.childDistance = 80.0,
       this.iconRadius = 16.0,
       this.mainButtonRadius = 24.0,
       this.dialOpenDuration = 300,
@@ -35,55 +37,61 @@ class _RadialMenuState extends State<RadialMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: List<Widget>() + _buildChildren() + [_buildMainButton()],
+    List<Widget> list = List<Widget>();
+    list.addAll(_buildChildren());
+    list.add(_buildMainButton());
+    return Container(
+      width: widget.containersize,
+      height: widget.containersize,
+      // color: Colors.grey,
+      child: Stack(
+        alignment: Alignment.center,
+        children: list,
+      ),
     );
   }
 
   Widget _buildMainButton() {
-    return Align(
-      alignment: Alignment.center,
-      child: AnimatedSwitcher(
-        duration: Duration(milliseconds: widget.dialOpenDuration),
-        transitionBuilder: (Widget child, Animation<double> animation) {
-          return ScaleTransition(child: child, scale: animation);
-        },
-        child: opened
-            ? InkWell(
-                child: Padding(
-                    padding: EdgeInsets.all(widget._buttonPadding),
-                    child: Container(
-                        height: widget.mainButtonRadius * 2,
-                        width: widget.mainButtonRadius * 2,
-                        decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(widget.mainButtonRadius),
-                            color: Colors.red),
-                        child: Center(
-                            child: Icon(Icons.close, color: Colors.white)))),
-                onTap: () {
-                  setState(() {
-                    opened = false;
-                  });
-                })
-            : InkWell(
-                child: Padding(
-                    padding: EdgeInsets.all(widget._buttonPadding),
-                    child: Container(
-                        height: widget.mainButtonRadius * 2,
-                        width: widget.mainButtonRadius * 2,
-                        decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(widget.mainButtonRadius),
-                            color: Colors.blue),
-                        child: Center(
-                            child: Icon(Icons.home, color: Colors.white)))),
-                onTap: () {
-                  setState(() {
-                    opened = true;
-                  });
-                }),
-      ),
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: widget.dialOpenDuration),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return ScaleTransition(child: child, scale: animation);
+      },
+      child: opened
+          ? InkWell(
+              child: Padding(
+                  padding: EdgeInsets.all(widget._mainButtonPadding),
+                  child: Container(
+                      height: widget.mainButtonRadius * 2,
+                      width: widget.mainButtonRadius * 2,
+                      decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(widget.mainButtonRadius),
+                          color: Colors.red),
+                      child: Center(
+                          child: Icon(Icons.close, color: Colors.white)))),
+              onTap: () {
+                setState(() {
+                  opened = false;
+                });
+              })
+          : InkWell(
+              child: Padding(
+                  padding: EdgeInsets.all(widget._mainButtonPadding),
+                  child: Container(
+                      height: widget.mainButtonRadius * 2,
+                      width: widget.mainButtonRadius * 2,
+                      decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(widget.mainButtonRadius),
+                          color: Colors.blue),
+                      child: Center(
+                          child: Icon(Icons.home, color: Colors.white)))),
+              onTap: () {
+                setState(() {
+                  opened = true;
+                });
+              }),
     );
   }
 
@@ -91,11 +99,10 @@ class _RadialMenuState extends State<RadialMenu> {
     return widget.items.asMap().entries.map((e) {
       int index = e.key;
       RadialMenuItem item = e.value;
-
-      final basePositionX =
-          MediaQuery.of(context).size.width / 2 - (widget.iconRadius + widget._buttonPadding);
-      final basePositionY =
-          MediaQuery.of(context).size.height / 2 - (widget.iconRadius + widget._buttonPadding);
+      final basePositionX = widget.containersize / 2 -
+          (widget.iconRadius + widget._itemButtonPadding);
+      final basePositionY = widget.containersize / 2 -
+          (widget.iconRadius + widget._itemButtonPadding);
       return AnimatedPositioned(
           duration: Duration(milliseconds: widget.dialOpenDuration),
           curve: widget.curve,
@@ -130,7 +137,7 @@ class _RadialMenuState extends State<RadialMenu> {
         child: InkWell(
           key: UniqueKey(),
           child: Padding(
-              padding: EdgeInsets.all(widget._buttonPadding),
+              padding: EdgeInsets.all(widget._itemButtonPadding),
               child: Container(
                   height: widget.iconRadius * 2,
                   width: widget.iconRadius * 2,

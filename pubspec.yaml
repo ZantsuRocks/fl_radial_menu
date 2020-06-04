@@ -1,7 +1,7 @@
 name: fl_radial_menu
 description: Radial Menu package
 version: 0.0.2
-homepage: https://pub.dev/packages/fl_radial_menu
+homepage: https://github.com/itog/fl_radial_menu
 repository: https://github.com/itog/fl_radial_menu
 
 environment:

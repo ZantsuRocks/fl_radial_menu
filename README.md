@@ -1,8 +1,8 @@
 # fl_radial_menu
 
-This package provide a Widget that shows radial menu.
+A simple and easy to use radial menu widget for Flutter that supports fanout direction.
 
-<img src="screenshot/screen.gif" width="200">
+![screem ca[tire]](screenshot/screen.gif)
 
 ## install
 ```

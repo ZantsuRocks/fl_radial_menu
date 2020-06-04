@@ -1,3 +1,5 @@
+## [0.0.2+2] - Update documents.
+
 ## [0.0.2+1] - Update readme.
 
 ## [0.0.2] - Fix layout issues.

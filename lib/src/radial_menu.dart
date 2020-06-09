@@ -208,7 +208,12 @@ class RadialMenu extends StatefulWidget {
         return Offset(x, y);
         break;
       case Fanout.top:
-        final x = containersize.width / 2 - (iconRadius + _itemButtonPadding);
+        final x = containersize.width / 2 -
+            (mainButtonRadius +
+                _mainButtonPadding +
+                iconRadius +
+                _itemButtonPadding);
+
         final y = containersize.height -
             (mainButtonRadius +
                 _mainButtonPadding +
@@ -217,7 +222,11 @@ class RadialMenu extends StatefulWidget {
         return Offset(x, y);
         break;
       case Fanout.bottom:
-        final x = containersize.width / 2 - (iconRadius + _itemButtonPadding);
+        final x = containersize.width / 2 -
+            (mainButtonRadius +
+                _mainButtonPadding +
+                iconRadius +
+                _itemButtonPadding);
         final y = (mainButtonRadius + _mainButtonPadding) -
             (iconRadius + _itemButtonPadding);
         return Offset(x, y);
@@ -239,7 +248,11 @@ class RadialMenu extends StatefulWidget {
         break;
       case Fanout.circle:
       default:
-        final x = containersize.width / 2 - (iconRadius + _itemButtonPadding);
+        final x = containersize.width / 2 -
+            (mainButtonRadius +
+                _mainButtonPadding +
+                iconRadius +
+                _itemButtonPadding);
         final y = containersize.height / 2 - (iconRadius + _itemButtonPadding);
 
         return Offset(x, y);

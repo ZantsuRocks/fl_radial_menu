@@ -1,6 +1,6 @@
 name: fl_radial_menu
 description: A simple and easy to use radial menu widget for Flutter that supports fanout direction.
-version: 0.0.2+2
+version: 0.1.0
 homepage: https://github.com/itog/fl_radial_menu
 repository: https://github.com/itog/fl_radial_menu
 

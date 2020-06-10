@@ -18,7 +18,7 @@ enum Fanout {
 class RadialMenu extends StatefulWidget {
   final List<RadialMenuItem> items;
   final double childDistance;
-  final double iconRadius;
+  final double itemButtonRadius;
   final double mainButtonRadius;
   final bool isClockwise;
   final int dialOpenDuration;
@@ -37,15 +37,15 @@ class RadialMenu extends StatefulWidget {
       case Fanout.bottomLeft:
       case Fanout.bottomRight:
         double w =
-            childDistance + iconRadius + mainButtonRadius + overshootBuffer;
+            childDistance + itemButtonRadius + mainButtonRadius + overshootBuffer;
         double h = w;
         return Size(w, h);
         break;
       case Fanout.top:
       case Fanout.bottom:
-        double w = (childDistance + iconRadius) * 2 + overshootBuffer;
+        double w = (childDistance + itemButtonRadius) * 2 + overshootBuffer;
         double h = childDistance +
-            iconRadius +
+            itemButtonRadius +
             mainButtonRadius +
             _mainButtonPadding +
             overshootBuffer;
@@ -54,15 +54,15 @@ class RadialMenu extends StatefulWidget {
       case Fanout.left:
       case Fanout.right:
         double w = childDistance +
-            iconRadius +
+            itemButtonRadius +
             mainButtonRadius +
             _mainButtonPadding +
             overshootBuffer;
-        double h = (childDistance + iconRadius) * 2 + overshootBuffer;
+        double h = (childDistance + itemButtonRadius) * 2 + overshootBuffer;
         return Size(w, h);
         break;
       case Fanout.circle:
-        double w = (childDistance + iconRadius) * 2 + overshootBuffer;
+        double w = (childDistance + itemButtonRadius) * 2 + overshootBuffer;
         double h = w;
         return Size(w, h);
         break;
@@ -176,73 +176,17 @@ class RadialMenu extends StatefulWidget {
         (isClockwise ? 1 : -1);
   }
 
-  Offset get position {
-    return posDelta + posCenter;
-  }
-
   Offset get posDelta {
     final x = (mainButtonRadius + _mainButtonPadding) -
-        (iconRadius + _itemButtonPadding);
+        (itemButtonRadius + _itemButtonPadding);
     final y = (mainButtonRadius + _mainButtonPadding) -
-        (iconRadius + _itemButtonPadding);
+        (itemButtonRadius + _itemButtonPadding);
     return Offset(x, y);
   }
 
-  Offset get posCenter {
-    switch (fanout) {
-      case Fanout.topLeft:
-        final x = containersize.width;
-        final y = containersize.height;
-        return Offset(x, y);
-        break;
-      case Fanout.topRight:
-        final x = 0.0;
-        final y = containersize.height;
-        return Offset(x, y);
-        break;
-      case Fanout.bottomLeft:
-        final x = containersize.width;
-        final y = 0.0;
-        return Offset(x, y);
-        break;
-      case Fanout.bottomRight:
-        final x = 0.0;
-        final y = 0.0;
-        return Offset(x, y);
-        break;
-      case Fanout.top:
-        final x = containersize.width / 2;
-        final y = containersize.height;
-        return Offset(x, y);
-        break;
-      case Fanout.bottom:
-        final x = containersize.width / 2;
-        final y = 0.0;
-        return Offset(x, y);
-        break;
-      case Fanout.left:
-        final x = containersize.width;
-        final y = containersize.height;
-        return Offset(x, y);
-        break;
-      case Fanout.right:
-        final x = 0.0;
-        final y = containersize.height / 2;
-        return Offset(x, y);
-        break;
-      case Fanout.circle:
-      default:
-        final x = containersize.width / 2;
-        final y = containersize.height / 2;
-
-        return Offset(x, y);
-        break;
-    }
-  }
-
   RadialMenu(this.items,
-      {this.childDistance = 80.0,
-      this.iconRadius = 16.0,
+      {this.childDistance = 90.0,
+      this.itemButtonRadius = 16.0,
       this.mainButtonRadius = 24.0,
       this.dialOpenDuration = 300,
       this.isClockwise = true,
@@ -256,24 +200,39 @@ class RadialMenu extends StatefulWidget {
 class _RadialMenuState extends State<RadialMenu> {
   bool opened = false;
 
+  final GlobalKey _key = GlobalKey();
+  Size _size = Size(0.0, 0.0);
+
+  getSizeAndPosition() {
+    RenderBox _renderBox = _key.currentContext.findRenderObject();
+    setState(() {
+      _size = _renderBox.size;      
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => getSizeAndPosition());
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> list = List<Widget>();
     list.addAll(_buildChildren());
     list.add(_buildMainButton());
 
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-      return Container(
-        width: widget.containersize.width,
-        height: widget.containersize.height,
-//for debug      color: Colors.grey,
-        child: Stack(
-          alignment: widget.stackAlignment,
-          children: list,
-        ),
-      );
-    });
+    return Container(
+      key: _key,
+      width: widget.containersize.width,
+      height: widget.containersize.height,
+      //for debug
+      // color: Colors.grey,
+      child: Stack(
+        alignment: widget.stackAlignment,
+        children: list,
+      ),
+    );
   }
 
   Widget _buildMainButton() {
@@ -329,11 +288,11 @@ class _RadialMenuState extends State<RadialMenu> {
           duration: Duration(milliseconds: widget.dialOpenDuration),
           curve: widget.curve,
           left: opened
-              ? widget.position.dx + widget.animationRelativePosX(index)
-              : widget.position.dx,
+              ? position.dx + widget.animationRelativePosX(index)
+              : position.dx,
           top: opened
-              ? widget.position.dy + widget.animationRelativePosY(index)
-              : widget.position.dy,
+              ? position.dy + widget.animationRelativePosY(index)
+              : position.dy,
           child: _buildChild(item));
     }).toList();
   }
@@ -349,10 +308,10 @@ class _RadialMenuState extends State<RadialMenu> {
           child: Padding(
               padding: EdgeInsets.all(widget._itemButtonPadding),
               child: Container(
-                  height: widget.iconRadius * 2,
-                  width: widget.iconRadius * 2,
+                  height: widget.itemButtonRadius * 2,
+                  width: widget.itemButtonRadius * 2,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(widget.iconRadius),
+                      borderRadius: BorderRadius.circular(widget.itemButtonRadius),
                       color: item.color),
                   child: Center(child: item.child))),
           onTap: () {
@@ -362,6 +321,62 @@ class _RadialMenuState extends State<RadialMenu> {
             });
           },
         ));
+  }
+
+  Offset get position {
+    return axisOrigin + widget.posDelta;
+  }
+
+  Offset get axisOrigin {
+    switch (widget.fanout) {
+      case Fanout.topLeft:
+        final x = _size.width - (widget.mainButtonRadius + widget._mainButtonPadding) * 2;
+        final y = _size.height - (widget.mainButtonRadius + widget._mainButtonPadding) * 2;
+        return Offset(x, y);
+        break;
+      case Fanout.topRight:
+        final x = 0.0;
+        final y = _size.height - (widget.mainButtonRadius + widget._mainButtonPadding) * 2;
+        return Offset(x, y);
+        break;
+      case Fanout.bottomLeft:
+        final x = _size.width  - (widget.mainButtonRadius + widget._mainButtonPadding) * 2;
+        final y = 0.0;
+        return Offset(x, y);
+        break;
+      case Fanout.bottomRight:
+        final x = 0.0;
+        final y = 0.0;
+        return Offset(x, y);
+        break;
+      case Fanout.top:
+        final x = _size.width / 2- (widget.mainButtonRadius + widget._mainButtonPadding);
+        final y = _size.height - (widget.mainButtonRadius + widget._mainButtonPadding)* 2;
+        return Offset(x, y);
+        break;
+      case Fanout.bottom:
+        final x = _size.width / 2- (widget.mainButtonRadius + widget._mainButtonPadding);
+        final y = 0.0;
+        return Offset(x, y);
+        break;
+      case Fanout.left:
+        final x = _size.width - (widget.mainButtonRadius + widget._mainButtonPadding) * 2;
+        final y = _size.height / 2 - (widget.mainButtonRadius + widget._mainButtonPadding);
+        return Offset(x, y);
+        break;
+      case Fanout.right:
+        final x = 0.0;
+        final y = _size.height / 2 - (widget.mainButtonRadius + widget._mainButtonPadding);
+        return Offset(x, y);
+        break;
+      case Fanout.circle:
+      default:
+      print(_size);
+        final x = _size.width / 2 - (widget.mainButtonRadius + widget._mainButtonPadding);
+        final y = _size.height / 2 - (widget.mainButtonRadius + widget._mainButtonPadding);
+        return Offset(x, y);
+        break;
+    }
   }
 }
 

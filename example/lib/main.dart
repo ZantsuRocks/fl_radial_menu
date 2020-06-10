@@ -32,24 +32,26 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: ListView(children: [
+        child: ListView(
+          children: [
           RadialMenu(items, fanout: Fanout.bottomRight),
-          Container(child: RadialMenu(items, fanout: Fanout.bottom)),
-          RadialMenu(
-            items,
-            fanout: Fanout.bottomLeft,
-          ),
+          Divider(),
+          RadialMenu(items, fanout: Fanout.bottom),
+          Divider(),
+          RadialMenu(items, fanout: Fanout.bottomLeft),
+          Divider(),
           RadialMenu(items, fanout: Fanout.right),
+          Divider(),
           RadialMenu(items),
+          Divider(),
           RadialMenu(items, fanout: Fanout.left),
+          Divider(),
           RadialMenu(items, fanout: Fanout.topRight),
+          Divider(),
           RadialMenu(items, fanout: Fanout.top),
+          Divider(),
           RadialMenu(items, fanout: Fanout.topLeft),
         ]),
-      ),
-      floatingActionButton: RadialMenu(
-        items,
-        fanout: Fanout.topLeft,
       ),
     );
   }

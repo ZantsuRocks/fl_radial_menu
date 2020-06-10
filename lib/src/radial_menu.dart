@@ -165,95 +165,75 @@ class RadialMenu extends StatefulWidget {
     }
   }
 
-  Offset get basePosition {
+  double animationRelativePosX(int index) {
+    return childDistance *
+        cos(_degreeToRadian(angularWidth / (numDivide) * index + startAngle));
+  }
+
+  double animationRelativePosY(int index) {
+    return childDistance *
+        sin(_degreeToRadian(angularWidth / (numDivide) * index + startAngle)) *
+        (isClockwise ? 1 : -1);
+  }
+
+  Offset get position {
+    return posDelta + posCenter;
+  }
+
+  Offset get posDelta {
+    final x = (mainButtonRadius + _mainButtonPadding) -
+        (iconRadius + _itemButtonPadding);
+    final y = (mainButtonRadius + _mainButtonPadding) -
+        (iconRadius + _itemButtonPadding);
+    return Offset(x, y);
+  }
+
+  Offset get posCenter {
     switch (fanout) {
       case Fanout.topLeft:
-        final x = containersize.width -
-            (mainButtonRadius +
-                _mainButtonPadding +
-                iconRadius +
-                _itemButtonPadding);
-        final y = containersize.height -
-            (mainButtonRadius +
-                _mainButtonPadding +
-                iconRadius +
-                _itemButtonPadding);
+        final x = containersize.width;
+        final y = containersize.height;
         return Offset(x, y);
         break;
       case Fanout.topRight:
-        final x = (mainButtonRadius + _mainButtonPadding) -
-            (iconRadius + _itemButtonPadding);
-        final y = containersize.height -
-            (mainButtonRadius +
-                _mainButtonPadding +
-                iconRadius +
-                _itemButtonPadding);
+        final x = 0.0;
+        final y = containersize.height;
         return Offset(x, y);
         break;
       case Fanout.bottomLeft:
-        final x = containersize.width -
-            (mainButtonRadius +
-                _mainButtonPadding +
-                iconRadius +
-                _itemButtonPadding);
-        final y = (mainButtonRadius + _mainButtonPadding) -
-            (iconRadius + _itemButtonPadding);
+        final x = containersize.width;
+        final y = 0.0;
         return Offset(x, y);
         break;
       case Fanout.bottomRight:
-        final x = (mainButtonRadius + _mainButtonPadding) -
-            (iconRadius + _itemButtonPadding);
-        final y = (mainButtonRadius + _mainButtonPadding) -
-            (iconRadius + _itemButtonPadding);
+        final x = 0.0;
+        final y = 0.0;
         return Offset(x, y);
         break;
       case Fanout.top:
-        final x = containersize.width / 2 -
-            (mainButtonRadius +
-                _mainButtonPadding +
-                iconRadius +
-                _itemButtonPadding);
-
-        final y = containersize.height -
-            (mainButtonRadius +
-                _mainButtonPadding +
-                iconRadius +
-                _itemButtonPadding);
+        final x = containersize.width / 2;
+        final y = containersize.height;
         return Offset(x, y);
         break;
       case Fanout.bottom:
-        final x = containersize.width / 2 -
-            (mainButtonRadius +
-                _mainButtonPadding +
-                iconRadius +
-                _itemButtonPadding);
-        final y = (mainButtonRadius + _mainButtonPadding) -
-            (iconRadius + _itemButtonPadding);
+        final x = containersize.width / 2;
+        final y = 0.0;
         return Offset(x, y);
         break;
       case Fanout.left:
-        final x = containersize.width -
-            (mainButtonRadius +
-                _mainButtonPadding +
-                iconRadius +
-                _itemButtonPadding);
-        final y = containersize.height / 2 - (iconRadius + _itemButtonPadding);
+        final x = containersize.width;
+        final y = containersize.height;
         return Offset(x, y);
         break;
       case Fanout.right:
-        final x = (mainButtonRadius + _mainButtonPadding) -
-            (iconRadius + _itemButtonPadding);
-        final y = containersize.height / 2 - (iconRadius + _itemButtonPadding);
+        final x = 0.0;
+        final y = containersize.height / 2;
         return Offset(x, y);
         break;
       case Fanout.circle:
       default:
-        final x = containersize.width / 2 -
-            (mainButtonRadius +
-                _mainButtonPadding +
-                iconRadius +
-                _itemButtonPadding);
-        final y = containersize.height / 2 - (iconRadius + _itemButtonPadding);
+        final x = containersize.width / 2;
+        final y = containersize.height / 2;
 
         return Offset(x, y);
         break;
@@ -281,15 +261,19 @@ class _RadialMenuState extends State<RadialMenu> {
     List<Widget> list = List<Widget>();
     list.addAll(_buildChildren());
     list.add(_buildMainButton());
-    return Container(
-      width: widget.containersize.width,
-      height: widget.containersize.height,
+
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return Container(
+        width: widget.containersize.width,
+        height: widget.containersize.height,
 //for debug      color: Colors.grey,
-      child: Stack(
-        alignment: widget.stackAlignment,
-        children: list,
-      ),
-    );
+        child: Stack(
+          alignment: widget.stackAlignment,
+          children: list,
+        ),
+      );
+    });
   }
 
   Widget _buildMainButton() {
@@ -345,20 +329,11 @@ class _RadialMenuState extends State<RadialMenu> {
           duration: Duration(milliseconds: widget.dialOpenDuration),
           curve: widget.curve,
           left: opened
-              ? widget.basePosition.dx +
-                  widget.childDistance *
-                      cos(_degreeToRadian(
-                          widget.angularWidth / (widget.numDivide) * index +
-                              widget.startAngle))
-              : widget.basePosition.dx,
+              ? widget.position.dx + widget.animationRelativePosX(index)
+              : widget.position.dx,
           top: opened
-              ? widget.basePosition.dy +
-                  widget.childDistance *
-                      sin(_degreeToRadian(
-                          widget.angularWidth / (widget.numDivide) * index +
-                              widget.startAngle)) *
-                      (widget.isClockwise ? 1 : -1)
-              : widget.basePosition.dy,
+              ? widget.position.dy + widget.animationRelativePosY(index)
+              : widget.position.dy,
           child: _buildChild(item));
     }).toList();
   }

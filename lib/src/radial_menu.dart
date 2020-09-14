@@ -272,7 +272,7 @@ class _RadialMenuState extends State<RadialMenu> {
                               BorderRadius.circular(widget.mainButtonRadius),
                           color: Colors.blue),
                       child: Center(
-                          child: closedIcon))),
+                          child: widget.closedIcon))),
               onTap: () {
                 setState(() {
                   opened = true;

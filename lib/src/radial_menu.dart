@@ -24,6 +24,7 @@ class RadialMenu extends StatefulWidget {
   final int dialOpenDuration;
   final Curve curve;
   final Fanout fanout;
+  final Icon closedIcon;
 
   final _mainButtonPadding = 8.0;
   final _itemButtonPadding = 8.0;
@@ -191,7 +192,8 @@ class RadialMenu extends StatefulWidget {
       this.dialOpenDuration = 300,
       this.isClockwise = true,
       this.curve = Curves.easeInOutBack,
-      this.fanout = Fanout.circle});
+      this.fanout = Fanout.circle,
+      this.closedIcon = Icon(Icons.home, color: Colors.white)});
 
   @override
   _RadialMenuState createState() => _RadialMenuState();
@@ -270,7 +272,7 @@ class _RadialMenuState extends State<RadialMenu> {
                               BorderRadius.circular(widget.mainButtonRadius),
                           color: Colors.blue),
                       child: Center(
-                          child: Icon(Icons.home, color: Colors.white)))),
+                          child: closedIcon))),
               onTap: () {
                 setState(() {
                   opened = true;

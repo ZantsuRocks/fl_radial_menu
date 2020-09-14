@@ -193,7 +193,7 @@ class RadialMenu extends StatefulWidget {
       this.isClockwise = true,
       this.curve = Curves.easeInOutBack,
       this.fanout = Fanout.circle,
-      this.closedIcon = Icon(Icons.home, color: Colors.white)});
+      this.closedIcon = const Icon(Icons.home, color: Colors.white)});
 
   @override
   _RadialMenuState createState() => _RadialMenuState();
